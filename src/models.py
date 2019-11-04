@@ -1,3 +1,6 @@
+import sys
+sys.path.append('./')
+from loss import smoothed_binary_crossentropy
 import tensorflow as tf
 from tensorflow.keras import datasets, layers, models
 from keras import backend as K
@@ -24,7 +27,7 @@ def baseline_cnn(image_dim = (100, 100, 5)):
     model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
     return model
 
-def combined_cnn(gsv_image_dim = (640, 640, 3), sat_image_dim = ((2100, 2100, 4)), n_classes = 2):
+def combined_cnn(gsv_image_dim = (640, 640, 3), sat_image_dim = ((2100, 2100, 4)), n_classes = 2, loss = 'binary_crossentropy'):
 
     """
     Combined CNN using satellite and Street View imagery.
@@ -76,6 +79,6 @@ def combined_cnn(gsv_image_dim = (640, 640, 3), sat_image_dim = ((2100, 2100, 4)
 
     # 5. define full model and compile
     model = models.Model(inputs=[gsv_input_img, sat_input_img], outputs=output)
-    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy', sensitivity, specificity])
+    model.compile(loss=loss, optimizer='adam', metrics=['accuracy', sensitivity, specificity])
 
     return model

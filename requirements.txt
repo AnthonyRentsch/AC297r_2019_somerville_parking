@@ -10,7 +10,7 @@ scikit-image
 scikit-learn
 geopandas
 descartes
-
+Keras
 # external requirements
 click
 Sphinx

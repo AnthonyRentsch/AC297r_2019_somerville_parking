@@ -28,47 +28,49 @@ def smooth_labels(labels_str):
 	#
     # return {"raw_text": raw_text, "label": label}
 	#
+    
+	smoothed_labels = []
 
+	for label in labels_str:
 
+		# split string column for label
+		split_label = label.split('_')
+		aerial_label = split_label[1]
+		gsv_label = split_label[3]
 
-	# split string column for label
-	split_label = tf.string_split(labels_str,'_')
-	aerial_label = split_label[1]
-	gsv_label = split_label[3]
+		# smoothing criteria
 
-	# smoothing criteria
+		## both labels agree
+		if aerial_label == '1' and gsv_label == '1':
+		    smoothed_label = 1.
+		elif aerial_label == '0' and gsv_label == '0':
+		    smoothed_label = 0.
 
-	## both labels agree
-	if aerial_label == '1' and gsv_label == '1':
-		smoothed_label = 1.
-	elif aerial_label == '0' and gsv_label == '0':
-		smoothed_label = 0.
+		## labels disagree
+		elif aerial_label == '1' and gsv_label == '0':
+		    smoothed_label = 0.9
+		elif aerial_label == '0' and gsv_label == '1':
+		    smoothed_label = 0.9
 
-	## labels disagree
-	elif aerial_label == '1' and gsv_label == '0':
-		smoothed_label = 0.9
-	elif aerial_label == '0' and gsv_label == '1':
-		smoothed_label = 0.9
+		## both labels uncertain
+		elif aerial_label == '2' and gsv_label == '2':
+		    smoothed_label = 0.5
 
-	## both labels uncertain
-	elif aerial_label == '2' and gsv_label == '2':
-		smoothed_label = 0.5
+		## one label certain, one label unsure
+		elif aerial_label == '2' and gsv_label != '2':
+		    if gsv_label == '1':
+		        smoothed_label = 0.9
+		    elif gsv_label == '0':
+		        smoothed_label = 0.1
+		elif aerial_label != '2' and gsv_label == '2':
+		    if aerial_label == '1':
+		        smoothed_label = 0.9
+		    elif aerial_label == '0':
+		        smoothed_label = 0.1
 
-	## one label certain, one label unsure
-	elif aerial_label == '2' and gsv_label != '2':
-		if gsv_label == '1':
-			smoothed_label = 0.9
-		elif gsv_label == '0':
-			smoothed_label = 0.1
-	elif aerial_label != '2' and gsv_label == '2':
-		if aerial_label == '1':
-			smoothed_label = 0.9
-		elif aerial_label == '0':
-			smoothed_label = 0.1
+		smoothed_labels.append(smoothed_label)
 
-	smoothed_labels.append(smoothed_label)
-
-	return smoothed_label
+	return smoothed_labels
 
 
 def smoothed_binary_crossentropy(y_true, y_pred):

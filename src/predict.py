@@ -107,12 +107,16 @@ def create_parcel_df(aerial_dir='../data/training/aerial_images/',
 	'''
 
 	# get all file names
-	aerial_files = glob.glob(aerial_dir + '*.png') 
-	gsv_files = glob.glob(gsv_dir + '*.jpg') 
+	aerial_files_raw = glob.glob(aerial_dir + '*.png') 
+	gsv_files_raw = glob.glob(gsv_dir + '*.jpg') 
+    
+    # remove path information
+	aerial_files_name = [x.split('/')[-1] for x in aerial_files_raw]
+	gsv_files_name = [x.split('/')[-1] for x in gsv_files_raw]
 
 	# strip them of extension so we can match them
-	aerial_files_raw = [x.split('/')[-1].replace('_aerial.png', '') for x in aerial_files]
-	gsv_files_raw = [x.split('/')[-1].replace('.jpg', '') for x in gsv_files]
+	aerial_files_name_no_ext = [x.replace('_aerial.png', '') for x in aerial_files_name]
+	gsv_files_name_no_ext = [x.replace('.jpg', '') for x in gsv_files_name]
 
 	# get MBLs to merge tabular features 
 	### FIX ##
@@ -121,9 +125,9 @@ def create_parcel_df(aerial_dir='../data/training/aerial_images/',
 	parcel_df['SITE_ADDR'] = parcel_df['SITE_ADDR'].str.replace(' ', '_')
 	
 	# create dataframes to join
-	aerial_df = pd.DataFrame(list(zip(aerial_files, aerial_files_raw)), 
+	aerial_df = pd.DataFrame(list(zip(aerial_files_name, aerial_files_name_no_ext)), 
 		columns=['aerial_filename', 'aerial_ADDR'])
-	gsv_df = pd.DataFrame(list(zip(gsv_files, gsv_files_raw)), 
+	gsv_df = pd.DataFrame(list(zip(gsv_files_name, gsv_files_name_no_ext)), 
 		columns=['gsv_filename', 'gsv_ADDR'])
 	
 	# merge on street name - keep all records for which we have aerial/GSV imagery

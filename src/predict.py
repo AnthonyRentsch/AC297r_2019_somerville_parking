@@ -40,7 +40,9 @@ def load_model(model_path):
 
 	return model
 
-def predict(model, data, y_column='temp_label',
+def predict(model, 
+	data, 
+	y_column='temp_label',
 	aerial_dir='../data/training/aerial_images/', 
 	gsv_dir='../data/training/street_view_images/',
 	tabular_path='../data/residence_addresses_googlestreetview_clean.csv',
@@ -66,13 +68,13 @@ def predict(model, data, y_column='temp_label',
 	'''
 
 	# load tabular data
-	tabular_df = pd.read_csv(tabular_path)
-	cols = list(tabular_df.columns ^ ['MBL']) # TEMP
+	tabular_df = pd.read_csv(tabular_path, index_col=0)
+	tabular_predictor_cols = list(tabular_df.columns ^ ['MBL']) # TEMP
 
 	# create generator
 	gen = generator_three_inputs(data, 
 		tabular_data = tabular_df,
-		tabular_predictor_cols = cols, #tabular_predictor_cols,
+		tabular_predictor_cols = tabular_predictor_cols, #tabular_predictor_cols,
 		aerial_dir = aerial_dir, gsv_dir = gsv_dir, 
 		batch_size = data.shape[0], gsv_image_dim = gsv_image_dim, aer_image_dim = aer_image_dim,
 		y_column = y_column)
@@ -82,8 +84,10 @@ def predict(model, data, y_column='temp_label',
 
 	return preds
 
-def create_parcel_df(aerial_dir='../data/training/aerial_images/', gsv_dir='../data/training/sv_images/',
-					 temp_label_col = 'temp_label'):
+def create_parcel_df(aerial_dir='../data/training/aerial_images/', 
+	gsv_dir='../data/training/sv_images/',
+	parcel_mbl_path='../data/Parcels_FY19/VisionExtract_FY19.txt',
+	temp_label_col = 'temp_label'):
 	'''
 	Creates dataframe to pass into predict function for all parcels in Somerville.
 
@@ -91,8 +95,11 @@ def create_parcel_df(aerial_dir='../data/training/aerial_images/', gsv_dir='../d
 	----------
 	aerial_dir : str
 	gsv_dir : str
+	parcel_mbl_path : str
+		Path to parcel data file, i.e. Vision Extract.
 	temp_label_col : str
-		Name of column to use for label. Label is not real but specificying one is needed for data generator.
+		Name of column to use for label. Label is not real 
+		but specificying one is needed for data generator.
 
 	Returns
 	-------
@@ -107,21 +114,33 @@ def create_parcel_df(aerial_dir='../data/training/aerial_images/', gsv_dir='../d
 	aerial_files_raw = [x.split('/')[-1].replace('_aerial.png', '') for x in aerial_files]
 	gsv_files_raw = [x.split('/')[-1].replace('.jpg', '') for x in gsv_files]
 
-	# merge on street name
-	# keep all records
-	aerial_df = pd.DataFrame(aerial_files_raw, columns=['aerial_ADDR'])
-	gsv_df = pd.DataFrame(gsv_files_raw, columns=['gsv_ADDR'])
+	# get MBLs to merge tabular features 
+	### FIX ##
+	parcel_df = pd.read_csv(parcel_mbl_path, error_bad_lines=False)
+	parcel_df = parcel_df[['SITE_ADDR', 'MBL']]
+	parcel_df['SITE_ADDR'] = parcel_df['SITE_ADDR'].str.replace(' ', '_')
+	
+	# create dataframes to join
+	aerial_df = pd.DataFrame(list(zip(aerial_files, aerial_files_raw)), 
+		columns=['aerial_filename', 'aerial_ADDR'])
+	gsv_df = pd.DataFrame(list(zip(gsv_files, gsv_files_raw)), 
+		columns=['gsv_filename', 'gsv_ADDR'])
+	
+	# merge on street name - keep all records for which we have aerial/GSV imagery
+	### this seems to return wrong number of rows ###
 	df = aerial_df.merge(gsv_df, how='outer', left_on='aerial_ADDR', right_on='gsv_ADDR')
+	df = df.merge(parcel_df, how='inner', left_on='aerial_ADDR', right_on='SITE_ADDR')
 
-	# append temp label column
-	df[temp_label_col] = '1'
+	# append temp label column - only needed to instantiate generator
+	df[temp_label_col] = np.random.choice(['0', '1', '2'], size=df.shape[0])
 
 	return df
 
 if __name__ == '__main__':
 
 	# load model
-	model_path = '../models/imageandtabular_model.h5'#'../models/satellite_model.h5'#
+	print('Loading model...')
+	model_path = '../models/imageandtabular_model.h5'
 	model = load_model(model_path)
 
 	# # load data
@@ -139,14 +158,16 @@ if __name__ == '__main__':
 
 	# # print results
 	# print('Predictions\n', preds)
-	# print(f"\nThere are {preds.sum()} drvieways.")
+	# print(f"\nThere are {preds.sum()} driveways.")
 
+	print('Loading data...')
 	df = create_parcel_df()
 	
+	print('Making predictions...')
 	preds = predict(model, df)
 
 	print(preds)
 
-	# currently no street view images saved
+	### currently no images being found by generator ###
 
 

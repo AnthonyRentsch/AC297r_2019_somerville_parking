@@ -36,7 +36,7 @@ def generator_three_inputs(sample, tabular_data, tabular_predictor_cols, aerial_
 
 	# generator for aerial images
 	aerial_gen_obj = ImageDataGenerator(horizontal_flip = True, vertical_flip = True, width_shift_range = 0.1,height_shift_range = 0.1, zoom_range = 0.1, rotation_range = 40)
-	aerial_gen = aerial_gen_obj.flow_from_dataframe(sample, directory = aerial_dir, x_col= 'aerial_filename', y_col= y_column, target_size=(aer_image_dim[0], aer_image_dim[1]), color_mode='rgba', class_mode='binary', batch_size=batch_size, shuffle=True, seed=100)
+	aerial_gen = aerial_gen_obj.flow_from_dataframe(sample, directory = aerial_dir, x_col= 'aerial_filename', y_col= y_column, target_size=(aer_image_dim[0], aer_image_dim[1]), color_mode='rgba', class_mode='categorical', batch_size=batch_size, shuffle=True, seed=100)
 
 	# put both together
 	while True:

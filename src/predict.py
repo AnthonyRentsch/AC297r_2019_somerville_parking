@@ -86,7 +86,7 @@ def predict(model,
 
 def create_parcel_df(aerial_dir='../data/training/aerial_images/', 
 	gsv_dir='../data/training/sv_images/',
-	parcel_mbl_path='../data/Parcels_FY19/VisionExtract_FY19.txt',
+	parcel_mbl_path='../data/residence_addresses_googlestreetview.xlsx',
 	temp_label_col = 'temp_label'):
 	'''
 	Creates dataframe to pass into predict function for all parcels in Somerville.
@@ -119,10 +119,10 @@ def create_parcel_df(aerial_dir='../data/training/aerial_images/',
 	gsv_files_name_no_ext = [x.replace('.jpg', '') for x in gsv_files_name]
 
 	# get MBLs to merge tabular features 
-	### FIX ##
-	parcel_df = pd.read_csv(parcel_mbl_path, error_bad_lines=False)
-	parcel_df = parcel_df[['SITE_ADDR', 'MBL']]
-	parcel_df['SITE_ADDR'] = parcel_df['SITE_ADDR'].str.replace(' ', '_')
+	parcel_df = pd.read_excel(parcel_mbl_path, sheet_name='python_readin')
+	parcel_df['ADDR_NUM'] = parcel_df['ADDR_NUM'].replace(',', '', regex=True)
+	parcel_df['ADDR'] = parcel_df['ADDR_NUM'].astype(str) + '_' + parcel_df['FULL_STR'].str.replace(' ', '_')
+	parcel_df['ADDR'] = parcel_df['ADDR'].str.replace(' ', '')
 	
 	# create dataframes to join
 	aerial_df = pd.DataFrame(list(zip(aerial_files_name, aerial_files_name_no_ext)), 
@@ -132,11 +132,17 @@ def create_parcel_df(aerial_dir='../data/training/aerial_images/',
 	
 	# merge on street name - keep all records for which we have aerial/GSV imagery
 	### this seems to return wrong number of rows ###
-	df = aerial_df.merge(gsv_df, how='outer', left_on='aerial_ADDR', right_on='gsv_ADDR')
-	df = df.merge(parcel_df, how='inner', left_on='aerial_ADDR', right_on='SITE_ADDR')
+	df = aerial_df.merge(gsv_df, how='outer', left_on='aerial_ADDR', right_on='gsv_ADDR').reset_index(drop=True)
+	df = df.merge(parcel_df, how='inner', left_on='aerial_ADDR', right_on='ADDR').reset_index(drop=True)
 
 	# append temp label column - only needed to instantiate generator
 	df[temp_label_col] = np.random.choice(['0', '1', '2'], size=df.shape[0])
+
+	# check
+	print(f'# aerial = {aerial_df.shape[0]}')
+	print(f'# GSV = {gsv_df.shape[0]}')
+	print(f'# parcels = {parcel_df.shape[0]}')
+	print(f'# total = {df.shape[0]}')
 
 	return df
 

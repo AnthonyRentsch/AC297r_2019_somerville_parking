@@ -42,10 +42,7 @@ def generator_three_inputs(sample, tabular_data, tabular_predictor_cols, aerial_
 	while True:
 		gsv_i = gsv_gen.next()
 		aerial_i = aerial_gen.next()
-		tabular_data_i = (tabular_data.loc[tabular_data.MBL.isin(gsv_i[1]), tabular_predictor_cols]).values
-		# print(tabular_data_i.shape)
-		# print(aerial_i[1])
-
+		tabular_data_i = tabular_data.loc[tabular_data.MBL.isin(gsv_i[1]), tabular_predictor_cols].values
 		yield [gsv_i[0], aerial_i[0], tabular_data_i], aerial_i[1]
 
 

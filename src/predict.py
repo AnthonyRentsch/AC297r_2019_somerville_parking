@@ -90,7 +90,7 @@ def predict(model,
 
 	# join address and MBL with predictions
 	preds = pd.concat([data[['ADDR','MBL']], pd.DataFrame(preds)], axis=1)
-	preds.columns = ['ADDR', 'MBL', 'no', 'yes', 'unsure']
+	preds.columns = ['ADDR', 'MBL', 'driveway_no', 'driveway_yes', 'driveway_unsure']
 
 	return preds
 
@@ -179,4 +179,8 @@ if __name__ == '__main__':
 
 	print(preds.shape)
 	print(preds)
+
+	# save preds
+	save_path = '../data/dirveway_predictions.csv'
+	preds.to_csv(save_path, index=False)
 

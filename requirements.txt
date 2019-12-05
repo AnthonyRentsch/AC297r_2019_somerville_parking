@@ -11,6 +11,10 @@ scikit-learn
 geopandas
 descartes
 Keras
+xgboost
+Rtree
+Django
+
 # external requirements
 click
 Sphinx

@@ -95,3 +95,12 @@ target/
 
 # Keras model files
 *.h5
+
+# models
+models/
+
+# misc
+src/predict_playground.ipynb
+
+# images
+images/

@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 import matplotlib as mpl
 
-def create_label_map(labels, save_path, parcels_path='../data/Parcels_FY19'):
+def create_label_map(labels, save_path='../images/label_map.png', parcels_path='../data/Parcels_FY19'):
 	'''
 	Create map of where we labeled data.
 
@@ -32,14 +32,27 @@ def create_label_map(labels, save_path, parcels_path='../data/Parcels_FY19'):
 	fig, ax = plt.subplots(figsize=(20,10))
 	parcel_labels.plot(ax=ax, color='white', edgecolor='grey', alpha=0.1)
 	parcel_labels.plot(ax=ax, column='3_labels', alpha=0.9, legend=True, cmap=cmap)
-	plt.title("", fontsize=22)
 	plt.axis('off')
 
 	# save map
 	plt.savefig(save_path, dpi=800)
 	
 
-def create_predictions_map(parcels_path, predictions_path):
+def create_predictions_map(parcels_path='../data/Parcels_FY19', 
+	predictions_path='../data/drivewaty_predictions.csv'):
+	'''
+	Create map with parcel-level predictions.
+
+	Parameters
+	----------
+	parcels_path : str
+	predictions_path : str
+
+	Returns
+	-------
+	None
+	'''
+
 	return
 
 if __name__ == '__main__':

@@ -6,6 +6,7 @@ from tensorflow.keras import optimizers
 import pandas as pd
 import numpy as np
 import glob
+import pickle
 
 import sys
 sys.path.append('../')
@@ -14,7 +15,7 @@ from models import three_input_model
 from metrics import sensitivity, specificity
 
 
-def load_model(model_path):
+def load_keras_model(model_path):
 	'''
 	Loads in a previously stored Keras model object in HDF5 format.
 
@@ -40,7 +41,7 @@ def load_model(model_path):
 
 	return model
 
-def predict(model, 
+def keras_predict(model, 
 	data, 
 	y_column='temp_label',
 	aerial_dir='../data/training/aerial_images/', 
@@ -162,21 +163,87 @@ def create_parcel_df(aerial_dir='../data/training/aerial_images/',
 
 	return df
 
+def load_sklearn_model(model_path='../models/random_forest_2019-12-05 18_54_34.749727.txt', 
+	preprocess_path='../models/scaler_2019-12-05 18:47:09.627296.txt'):
+	'''
+	Load pickled sklearn model.
+
+	Parameters
+	----------
+	model_path : str
+	preprocess_path : str
+
+	Returns
+	-------
+	model, preprocesser : sklearn objects
+	'''
+
+	with open(model_path, 'rb') as f:
+		model = pickle.load(f)
+
+	with open(preprocess_path, 'rb') as f:
+		preprocesser = pickle.load(f)
+    
+	return model, preprocesser
+
+def sklearn_predict(model, preprocesser,
+ 	tabular_df_path='../data/residence_addresses_googlestreetview_clean.csv'):
+	'''
+	Predict on tabular data using loaded sklearn model.
+
+	Parameters
+	----------
+	model : sklearn object
+	preprocesser : sklearn object
+	tabular_df_path : str
+
+	Returns
+	-------
+	predictions : pd.DataFrame
+	'''
+
+	tabular_df = pd.read_csv(tabular_df_path, index_col=0)
+	cols = list(tabular_df.columns ^ ['MBL'])
+
+	scaled_data = preprocesser.transform(tabular_df[cols])
+
+	predictions = model.predict_proba(scaled_data)
+
+	predictions = pd.concat([tabular_df[['MBL']], pd.DataFrame(predictions)], axis=1)
+	predictions.columns = ['MBL', 'driveway_no', 'driveway_yes']
+
+	return predictions
+
 if __name__ == '__main__':
 
-	# load model
-	print('\nLoading model...')
-	model_path = '../models/imageandtabular_model.h5'
-	model = load_model(model_path)
+	MODEL_TYPE='sklearn' #keras
 
-	# load data
-	print('\nLoading data...')
-	df = create_parcel_df()
-	
-	# make predictions
-	print('\nMaking predictions...')
-	preds = predict(model, df)
+	if MODEL_TYPE == 'keras':
 
+		# load model
+		print('\nLoading model...')
+		model_path = '../models/imageandtabular_model.h5'
+		model = load_keras_model(model_path)
+
+		# load data
+		print('\nLoading data...')
+		df = create_parcel_df()
+		
+		# make predictions
+		print('\nMaking predictions...')
+		preds = keras_predict(model, preprocesser)
+
+	elif MODEL_TYPE == 'sklearn':
+
+		# load model
+		print('\nLoading model...')
+		model, preprocesser = load_sklearn_model()
+
+		# make predictions
+		print('\nMaking predictions...')
+		preds = sklearn_predict(model, preprocesser)
+
+	# check results
 	print(preds.shape)
 	print(preds)
 

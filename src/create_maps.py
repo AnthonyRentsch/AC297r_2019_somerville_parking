@@ -39,7 +39,7 @@ def create_label_map(labels, save_path='../images/label_map.png', parcels_path='
 	plt.axis('off')
 
 	# save map
-	plt.savefig(save_path, dpi=800)
+	plt.savefig(save_path, dpi=450)
 	
 
 def create_predictions_map(save_path='../images/predictions_map.png',
@@ -81,7 +81,7 @@ def create_predictions_map(save_path='../images/predictions_map.png',
 	plt.axis('off')
 
 	# save
-	plt.savefig(save_path, dpi=800)
+	plt.savefig(save_path, dpi=450)
 
 
 

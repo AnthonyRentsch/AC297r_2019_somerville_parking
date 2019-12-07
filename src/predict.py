@@ -1,3 +1,7 @@
+### 
+# WARNING - predict not working properly for sklearn models
+###
+
 # imports
 import warnings
 warnings.filterwarnings('ignore')
@@ -6,7 +10,8 @@ from tensorflow.keras import optimizers
 import pandas as pd
 import numpy as np
 import glob
-import pickle
+#from joblib import load
+from sklearn.externals.joblib import load
 
 import sys
 sys.path.append('../')
@@ -163,8 +168,8 @@ def create_parcel_df(aerial_dir='../data/training/aerial_images/',
 
 	return df
 
-def load_sklearn_model(model_path='../models/random_forest_2019-12-05 18_54_34.749727.txt', 
-	preprocess_path='../models/scaler_2019-12-05 18:47:09.627296.txt'):
+def load_sklearn_model(model_path='../models/random_forest_120719.joblib', 
+	preprocess_path='../models/scaler_120719.joblib'):
 	'''
 	Load pickled sklearn model.
 
@@ -178,11 +183,13 @@ def load_sklearn_model(model_path='../models/random_forest_2019-12-05 18_54_34.7
 	model, preprocesser : sklearn objects
 	'''
 
-	with open(model_path, 'rb') as f:
-		model = pickle.load(f)
+	model = load(model_path)
+	#with open(model_path, 'rb') as f:
+	#	model = pickle.loads(model_path)
 
-	with open(preprocess_path, 'rb') as f:
-		preprocesser = pickle.load(f)
+	#with open(preprocess_path, 'rb') as f:
+	#	preprocesser = pickle.loads(preprocess_path)
+	preprocesser = load(preprocess_path)
     
 	return model, preprocesser
 
@@ -231,7 +238,7 @@ if __name__ == '__main__':
 		
 		# make predictions
 		print('\nMaking predictions...')
-		preds = keras_predict(model, preprocesser)
+		preds = keras_predict(model, df)
 
 	elif MODEL_TYPE == 'sklearn':
 
@@ -248,6 +255,6 @@ if __name__ == '__main__':
 	print(preds)
 
 	# save preds
-	save_path = '../data/dirveway_predictions.csv'
+	save_path = '../data/driveway_predictions.csv'
 	preds.to_csv(save_path, index=False)
 

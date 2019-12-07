@@ -101,3 +101,6 @@ models/
 
 # misc
 src/predict_playground.ipynb
+
+# images
+images/

@@ -77,6 +77,14 @@ def clean(df):
     # add building to lot ratio
     df['BUILDING_LOT_RATIO'] = df.BLD_AREA/df.LOT_SIZE
 
+    # add building parcel geometric features
+    building_parcel_geometry = pd.read_csv('./data/building_parcel_geometric_features.csv', index_col=0)
+    df = df.merge(building_parcel_geometry, how = 'left')
+
+    # add parking permit value_counts
+    parking_permit_counts = pd.read_csv('./data/parking_permit_counts.csv', index_col = 0)
+    df = df.merge(parking_permit_counts)
+
     # impute missing values with mean
     df = df.fillna(df.mean())
     print(sum(df['1ST_CLOSEST'].isna()))

@@ -85,17 +85,17 @@ def plot_calibration_histograms(preds, calibrated_preds, save_path='../images/ca
 	None
 	'''
 
-	fig, ax = plt.subplots(1, 2, figsize=(20,6.5))
+	fig, ax = plt.subplots(1, 2, sharey=True, sharex=True, figsize=(20,6.5))
 	color = '#262626'
 	fontsize=20
 	ticksize=16
 
-	sns.distplot(preds['yes_driveway'], color=color, ax=ax[0])
+	sns.distplot(preds['yes_driveway'], kde=False, color=color, ax=ax[0])
 	ax[0].get_yaxis().set_ticks([])
 	ax[0].tick_params(axis='x', which='major', labelsize=ticksize)
 	ax[0].set_xlabel('Uncalibrated predictions', fontsize=fontsize)
 
-	sns.distplot(calibrated_preds['calibrated_yes_driveway'], color=color, ax=ax[1])
+	sns.distplot(calibrated_preds['calibrated_yes_driveway'], kde=False, color=color, ax=ax[1])
 	ax[1].get_yaxis().set_ticks([])
 	ax[1].tick_params(axis='x', which='major', labelsize=ticksize)
 	ax[1].set_xlabel('Calibrated predictions', fontsize=fontsize)

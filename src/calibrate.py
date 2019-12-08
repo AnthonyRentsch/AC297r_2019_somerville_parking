@@ -3,6 +3,7 @@ from sklearn.isotonic import IsotonicRegression
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 def plot_calibration_curve(labels, preds, col, save_path='../images/calibration_curve.png'):
 	'''
@@ -69,6 +70,39 @@ def perform_calibration(raw_probs, labels):
 
 	return calibrated_probs
 
+def plot_calibration_histograms(preds, calibrated_preds, save_path='../images/calibration_histogram.png'):
+	'''
+	Plot histograms of calibrated and uncalibrated scores
+
+	Parameters
+	----------
+	preds : pd.DataFrame
+	calibrated_preds : pd.DataFrame
+	save_path : str
+
+	Returns
+	-------
+	None
+	'''
+
+	fig, ax = plt.subplots(1, 2, figsize=(20,6.5))
+	color = '#262626'
+	fontsize=20
+	ticksize=16
+
+	sns.distplot(preds['yes_driveway'], color=color, ax=ax[0])
+	ax[0].get_yaxis().set_ticks([])
+	ax[0].tick_params(axis='x', which='major', labelsize=ticksize)
+	ax[0].set_xlabel('Uncalibrated predictions', fontsize=fontsize)
+
+	sns.distplot(calibrated_preds['calibrated_yes_driveway'], color=color, ax=ax[1])
+	ax[1].get_yaxis().set_ticks([])
+	ax[1].tick_params(axis='x', which='major', labelsize=ticksize)
+	ax[1].set_xlabel('Calibrated predictions', fontsize=fontsize)
+	plt.tight_layout()
+
+	plt.savefig(save_path, dpi=450)
+
 
 if __name__ == '__main__':
 	
@@ -86,3 +120,15 @@ if __name__ == '__main__':
 
 	# calibration curve again
 	plot_calibration_curve(labels, calibrated_preds, 'calibrated_yes_driveway', '../images/post_calibration_curve.png')
+
+	# plot histogmrams
+	plot_calibration_histograms(preds, calibrated_preds)
+
+	# print results
+	point_estimate = np.sum(calibrated_preds['calibrated_yes_driveway'])
+	variance = np.sum((calibrated_preds['calibrated_yes_driveway'])*(1-calibrated_preds['calibrated_yes_driveway']))
+
+	print(f'Point estimate: {point_estimate}')
+	print(f'Variance: {variance}')
+	print(f'SD: {np.sqrt(variance)}')
+	print(f'2 SDs: {2*np.sqrt(variance)}')

@@ -2,14 +2,20 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 
-def clean_categorical(df, clm, threshold):
+def clean_categorical(df, clm, threshold, one_hot = True):
     value_counts = df[clm].value_counts()
     keep = value_counts[value_counts > threshold].index
     df[clm] = df[clm].apply(lambda x: x if x in keep else 'other')
-
-    one_hot = pd.get_dummies(df[clm])
-    df = df.join(one_hot)
-    df = df.drop([clm, 'other'],axis = 1)
+    if one_hot:
+        one_hot = pd.get_dummies(df[clm])
+        try:
+            df = df.join(one_hot)
+        except ValueError:
+            df = df.join(one_hot, lsuffix = '_clm')
+        df = df.drop([clm, 'other'],axis = 1)
+    else:
+        vc = df[clm].value_counts()
+        df[clm] = df[clm].apply(lambda x: vc.loc[x] if type(x) == str else np.NaN)
     return df
 
 def clean(df):
@@ -33,7 +39,7 @@ def clean(df):
     df[is_missing_column_names] = df[is_missing_column].isna().astype('int32')
 
     # convert last sale date to just year
-    df['LS_YEAR'] = df['LS_DATE'].apply(lambda x: x.year)
+    df.LS_YEAR = df['LS_DATE'].apply(lambda x: x.year)
     df = df.drop('LS_DATE', axis = 1)
 
     #clean use codes
@@ -68,7 +74,7 @@ def clean(df):
 
     # add distance to neighbors
     building_dist = pd.read_csv('./data/buildings_clean.csv', index_col = 0)
-    df = df.merge(building_dist[['MBL', '1ST_CLOSEST', '2ND_CLOSEST']])
+    df = df.merge(building_dist[['MBL', '1ST_CLOSEST', '2ND_CLOSEST']], how='left')
 
     # add thresholds
     df['LARGE_2ND_CLOSEST'] = (df['2ND_CLOSEST'] > 30).astype('int')
@@ -83,14 +89,36 @@ def clean(df):
 
     # add parking permit value_counts
     parking_permit_counts = pd.read_csv('./data/parking_permit_counts.csv', index_col = 0)
-    df = df.merge(parking_permit_counts)
+    df = df.merge(parking_permit_counts, how = 'left')
+
+    # add assessment data
+    assessor = pd.read_csv('./data/assessor_clean.csv', index_col = 0)
+    df = df.merge(assessor, how = 'left')
+
+    assessor_tabular = [
+        'ROOF_STRUCTURE_DESCRIP',
+        'ROOF_COVER_DESCRIP',
+        'INT_WALL_1_DESCRIP',
+        'HEAT_TYPE',
+        'FUEL_TYPE',
+        'AC_TYPE',
+        'GRADE_DESCRIP'
+    ]
+
+    for clm in assessor_tabular:
+        df = clean_categorical(df, clm, 2)
 
     # impute missing values with mean
     df = df.fillna(df.mean())
-    print(sum(df['1ST_CLOSEST'].isna()))
 
     # take max over multiple units per MBL
     df = df.groupby('MBL').mean().reset_index()
+
+    # one more time, for good luck
+    df = df.fillna(df.mean())
+
+    print(df.isnull().values.any())
+    print(df.isna().values.any())
 
     return df
 

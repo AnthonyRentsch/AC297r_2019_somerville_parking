@@ -23,6 +23,7 @@ class Raster:
         ax.imshow(self.arr)
         plt.show()
 
+<<<<<<< HEAD
 
     def savefig(self, *args, **kwargs):
         fig, ax = plt.subplots(figsize=(7, 7))
@@ -30,6 +31,13 @@ class Raster:
         ax.axis('off')
         plt.savefig(*args, bbox_inches='tight', **kwargs)
         plt.close()
+=======
+    def savefig(self, *args, **kwargs):
+        fig, ax = plt.subplots(figsize=(7, 7))
+        ax.imshow(self.arr)
+        plt.savefig(*args, **kwargs)
+        plt.show()
+>>>>>>> d70571fc6ae6384d151885c370ed0486c1dd451c
 
     def clean(self, image_dim):
         height, width, channels = image_dim

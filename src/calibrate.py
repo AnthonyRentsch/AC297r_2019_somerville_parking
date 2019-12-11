@@ -105,7 +105,7 @@ def plot_calibration_histograms(preds, calibrated_preds, save_path='../images/ca
 
 
 if __name__ == '__main__':
-	
+
 	# read in data
 	labels = pd.read_csv('../labels/labels_final.csv', index_col=0)
 	labels = labels[labels['has_parking'] != 2] # remove unknowns
@@ -121,7 +121,7 @@ if __name__ == '__main__':
 	# calibration curve again
 	plot_calibration_curve(labels, calibrated_preds, 'calibrated_yes_driveway', '../images/post_calibration_curve.png')
 
-	# plot histogmrams
+	# plot histograms
 	plot_calibration_histograms(preds, calibrated_preds)
 
 	# print results

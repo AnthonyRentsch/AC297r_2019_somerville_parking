@@ -57,7 +57,6 @@ def create_predictions_map(parcels, predictions, col, bins=None, save_path='../i
 
 	# load data
 	parcel_df_driveways = parcels.merge(predictions, how='left', left_on='TaxParMBL', right_on='MBL')
-	print(parcel_df_driveways.head())
 
 	# instantiate map
 	fig, ax = plt.subplots(figsize=(20,20))
@@ -76,9 +75,10 @@ def create_predictions_map(parcels, predictions, col, bins=None, save_path='../i
 		    'Custom cmap', cmaplist, cmap.N)
 		norm = mpl.colors.BoundaryNorm(bins, cmap.N)
 
-		ax_cm = fig.add_axes([0.25, 0.05, 0.5, 0.05]) #left bottom width height
+		ax_cm = fig.add_axes([0.25, 0.05, 0.5, 0.02]) #left bottom width height
 		cbar = mpl.colorbar.ColorbarBase(ax_cm, cmap=cmap, norm=norm, orientation='horizontal',
 		    spacing='uniform', ticks=bins, boundaries=bins)
+		cbar.ax.tick_params(labelsize=16)
 
 	else: # continuous
 		
@@ -102,7 +102,7 @@ if __name__ == '__main__':
 	additional_manual_labels = pd.read_csv('../labels/additional_training_labels_120319.csv')
 	labels = pd.concat([manual_labels, additional_manual_labels], axis=0, sort=False)
 	parcels = geopandas.read_file('../data/Parcels_FY19')
-	calibrated_predictions = pd.read_csv('../data/calibrated_driveway_predictions.csv')
+	calibrated_predictions = pd.read_csv('../data/calibrated_driveway_predictions.csv', index_col=0)
 
 	# create maps
 	create_label_map(labels, parcels)

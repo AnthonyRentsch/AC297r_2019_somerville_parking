@@ -1,6 +1,5 @@
 import sys
-sys.path.append('./')
-from src.loss import smoothed_binary_crossentropy
+from loss import smoothed_binary_crossentropy
 import tensorflow as tf
 from tensorflow.keras import datasets, layers, models
 from tensorflow.keras import backend as K

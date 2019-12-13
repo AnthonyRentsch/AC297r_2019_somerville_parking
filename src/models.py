@@ -1,5 +1,4 @@
 import sys
-#sys.path.append('./')
 from loss import smoothed_binary_crossentropy
 import tensorflow as tf
 from tensorflow.keras import datasets, layers, models

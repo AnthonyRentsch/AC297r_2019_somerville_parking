@@ -19,5 +19,5 @@ def save_streetview_image(location, file_path, width=640, height=640):
     r_image = requests.get(url = url_img, params = params, stream = True)
 
     with open(file_path, 'wb') as f:
-        r_image.raw.decode_content = True
-        shutil.copyfileobj(r_image.raw, f)
+        for chunk in r_image:
+            f.write(chunk)

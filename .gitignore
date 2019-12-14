@@ -103,6 +103,7 @@ models/
 
 # misc
 src/predict_playground.ipynb
+notebooks/ignored_notebooks/
 
 # images
 images/

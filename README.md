@@ -32,7 +32,6 @@ To safely use our code, you should create a virtual environment and add it to ju
     │   ├── midterm
     │   ├── milestone-1
     │   ├── milestone-2
-    │   └── partners-reports
 
 
 ## Team Members

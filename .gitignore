@@ -1,3 +1,5 @@
+# models
+models/
 # API Key
 secret/
 
@@ -93,3 +95,16 @@ target/
 
 # Mypy cache
 .mypy_cache/
+
+# Keras model files
+*.h5
+
+# models
+models/
+
+# misc
+src/predict_playground.ipynb
+notebooks/ignored_notebooks/
+
+# images
+images/

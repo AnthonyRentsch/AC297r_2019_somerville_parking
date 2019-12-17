@@ -1,3 +1,5 @@
+import sys
+from loss import smoothed_binary_crossentropy
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import datasets, layers, models

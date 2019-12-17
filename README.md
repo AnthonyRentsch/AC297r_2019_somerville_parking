@@ -9,7 +9,7 @@ This repository contains all of the code we wrote to perform our analyses. All o
 
 ## Installation
 
-To safely use this package, you should create a virtual environment and add it to jupyter notebooks. To do so, perform the following steps:
+To safely use our code, you should create a virtual environment and add it to jupyter notebooks. To do so, perform the following steps:
 1. Create virtual environment in this directory if it does not already exist with `virtualenv somerville`
 2. Activate virtual env with `source somerville/bin/activate`
 3. Install requirements with `pip install -r requirements.txt`
@@ -42,5 +42,7 @@ To safely use this package, you should create a virtual environment and add it t
 - Anthony Rentsch
 - Kevin Rader (mentor)
 
+
+---
 
 <p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. </small></p>

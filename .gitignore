@@ -105,6 +105,7 @@ models/
 # misc
 src/predict_playground.ipynb
 notebooks/ignored_notebooks/
+notebooks/manual_labels_cleaning_for_models.ipynb
 submissions/final-presentation/
 
 # images

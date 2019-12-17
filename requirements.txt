@@ -8,6 +8,10 @@ pandas
 tensorflow
 scikit-image
 scikit-learn
+
+google_streetview
+xlrd
+seaborn
 geopandas
 descartes
 Keras

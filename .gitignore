@@ -105,6 +105,7 @@ models/
 # misc
 src/predict_playground.ipynb
 notebooks/ignored_notebooks/
+submissions/final-presentation/
 
 # images
 images/

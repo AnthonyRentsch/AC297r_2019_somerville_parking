@@ -15,8 +15,6 @@ To safely use our code, you should create a virtual environment and add it to ju
 3. Install requirements with `pip install -r requirements.txt`
 4. Add the virtual environment to jupyter with `python -m ipykernel install --user --name=somerville`
 
-For access to the data, please reach out to one of the team members directly.
-
 ## Project Organization
 
     ├── README.md

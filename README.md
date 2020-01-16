@@ -27,6 +27,7 @@ To safely use our code, you should create a virtual environment and add it to ju
     │   ├── ...
     ├── submissions
     │   ├── final-presentation
+    │   ├── final-poster
     │   ├── lighting-talk-1
     │   ├── lighting-talk-2
     │   ├── midterm
